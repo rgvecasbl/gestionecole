@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Logiciel de gestion des écoles - Maquettes</title>
+<style>
+:root{
+  --papier:#ffffff; --ligne:#d3e2f6; --encre:#1c3a8a; --texte:#1b2333; --gris:#586176;
+  --marge:#c8102e; --surligne:#ffd84d; --carte:#f3f7fd; --bord:#cfd9ea;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--papier:#131a2b; --ligne:#1f2d4a; --encre:#a9c0ff; --texte:#e8ecf5; --gris:#9aa5bd; --marge:#ff6b7f; --carte:#1a2338; --bord:#2b3854;}
+}
+:root[data-theme="dark"]{--papier:#131a2b; --ligne:#1f2d4a; --encre:#a9c0ff; --texte:#e8ecf5; --gris:#9aa5bd; --marge:#ff6b7f; --carte:#1a2338; --bord:#2b3854;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--papier);color:var(--texte);font:16px/1.5 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.apercu{padding:10px 12px 8px;border-bottom:1px solid var(--bord);background:var(--carte)}
+.apercu p{margin:0 0 6px;font-size:13px;color:var(--gris)}
+.apercu nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.apercu button{flex:none;border:1px solid var(--bord);background:var(--papier);color:var(--texte);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.apercu button[aria-current="true"]{background:var(--surligne);border-color:var(--surligne);color:#1b2333;font-weight:600}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--encre);outline-offset:2px}
+.cahier{max-width:520px;margin:0 auto;min-height:100vh;padding:22px 18px 40px 46px;position:relative;
+  background-image:linear-gradient(var(--ligne) 1px,transparent 1px);background-size:100% 32px}
+.cahier::before{content:"";position:absolute;top:0;bottom:0;left:30px;width:2px;background:var(--marge);opacity:.75}
+h1,h2{font-family:Georgia,"Times New Roman",serif;color:var(--encre);margin:0;font-weight:700}
+h1{font-size:28px;line-height:1.2;margin-bottom:6px}
+h2{font-size:19px;margin:26px 0 8px}
+.sous{color:var(--gris);margin:0 0 18px;font-size:15px}
+label{display:block;margin:0 0 14px;font-size:14px;color:var(--gris)}
+input,select{display:block;width:100%;margin-top:2px;padding:8px 2px;font:inherit;font-size:16px;color:var(--texte);
+  background:transparent;border:0;border-bottom:2px solid var(--encre);border-radius:0}
+select{background:var(--papier)}
+.btn{display:inline-block;border:0;border-radius:6px;background:var(--encre);color:var(--papier);font:inherit;font-weight:600;padding:11px 18px;cursor:pointer;margin-top:6px}
+.btn.sec{background:transparent;color:var(--encre);border:2px solid var(--encre);padding:9px 16px}
+.btn.mini{padding:6px 12px;font-size:14px;margin:0}
+.btn.mini.sec{padding:4px 10px}
+.lien{background:none;border:0;color:var(--encre);text-decoration:underline;font:inherit;padding:0;cursor:pointer}
+.onglets{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.onglets button{border:2px solid var(--encre);background:var(--papier);color:var(--encre);border-radius:6px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.onglets button[aria-selected="true"]{background:var(--surligne);color:#1b2333;font-weight:700}
+.entete{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.ligne{background:var(--papier);border:1px solid var(--bord);border-left:4px solid var(--encre);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.ligne b{display:block}
+.ligne span{font-size:14px;color:var(--gris)}
+.actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.etat{font-weight:600;margin-top:8px;font-size:14px}
+.etat.ok{color:#1a7f46}.etat.non{color:var(--marge)}
+.info{background:var(--carte);border:1px solid var(--bord);border-radius:6px;padding:10px 12px;font-size:14px;margin-top:12px}
+</style>
+</head>
+<body>
+<header class="apercu">
+  <p>Aperçu des écrans (maquette, données fictives)</p>
+  <nav id="nav" aria-label="Écrans"></nav>
+</header>
+<main class="cahier" id="app"></main>
+<script>
+var ECRANS=[["connexion","Connexion"],["inscription","Inscription"],["super","Super admin"],["direction","Direction"],["enseignant","Enseignant"],["eleve","Élève"],["parent","Parent"]];
+var ONGLETS=[["ecole","École"],["enseignant","Enseignant"],["eleve","Élève"],["parent","Parent"]];
+var ecran="connexion", onglet="ecole";
+var ECOLES=["EP Bon Berger, Kinshasa","EP Saint Joseph, Lubumbashi","EP La Source, Goma"];
+var CLASSES=["1re année A","2e année A","3e année B","4e année A","5e année A","6e année B"];
+var ETUDES=["Diplôme d'État (D6)","Graduat","Licence","Autre"];
+var ENFANTS=["Grâce Ilunga, 2e année A","Jonathan Tshibanda, 5e année A","Ruth Mabiala, 1re année A"];
+
+function champ(l,t,opts){
+  if(opts) return '<label>'+l+'<select><option>Choisir…</option>'+opts.map(function(o){return '<option>'+o+'</option>'}).join('')+'</select></label>';
+  return '<label>'+l+'<input type="'+(t||"text")+'"></label>';
+}
+var FORMS={
+  ecole:[["Nom de l'école"],["N° d'enregistrement"],["Date de création","date"],["Arrêté"],["Nombre de classes","number"],["Nom complet du directeur"],["Date de naissance du directeur","date"],["Lieu de naissance du directeur"],["E-mail ou téléphone"],["Mot de passe","password"]],
+  enseignant:[["École",0,ECOLES],["Classe",0,CLASSES],["Nom complet"],["Date de naissance","date"],["Lieu de naissance"],["Numéro de téléphone","tel"],["E-mail","email"],["Niveau d'études",0,ETUDES],["Mot de passe","password"]],
+  eleve:[["École",0,ECOLES],["Classe",0,CLASSES],["Nom complet"],["Date de naissance","date"],["Lieu de naissance"],["E-mail ou téléphone"],["Mot de passe","password"]],
+  parent:[["École",0,ECOLES],["Votre enfant",0,ENFANTS],["Votre nom complet"],["E-mail ou téléphone"],["Mot de passe","password"]]
+};
+var MESSAGES={
+  ecole:"Demande envoyée. Le Super admin doit l'approuver avant votre première connexion.",
+  enseignant:"Demande envoyée. La direction de l'école doit l'approuver avant votre première connexion.",
+  eleve:"Demande envoyée. La direction de l'école doit l'approuver avant votre première connexion.",
+  parent:"Demande envoyée. La direction confirmera le lien avec votre enfant avant votre première connexion."
+};
+
+function ligne(t,m,act){
+  return '<div class="ligne"><b>'+t+'</b><span>'+m+'</span>'+(act?'<div class="actions">'+act+'</div>':'')+'</div>';
+}
+var DECIDER='<button class="btn mini" data-d="ok">Approuver</button><button class="btn mini sec" data-d="non">Refuser</button>';
+function section(t,contenu,bouton){
+  return '<h2>'+t+'</h2>'+contenu+(bouton?'<button class="btn mini sec">'+bouton+'</button>':'');
+}
+var CIRC=function(nouvelle,liste){return section("Circulaires",liste,nouvelle)};
+var FORUM=section("Forum d'échange",ligne("Comment organiser la remise des bulletins ?","14 messages, dernier message hier"),"Nouveau sujet");
+
+var TABLEAUX={
+  super:{titre:"Espace Super admin",sous:"Ministère - suivi des établissements",corps:
+    section("Écoles à approuver",
+      ligne("EP La Source, Goma","N° 0457/GOM, 12 classes. Directeur : Joseph Kabuya",DECIDER)+
+      ligne("EP Espoir, Kisangani","N° 0212/KIS, 8 classes. Directrice : Léa Bahati",DECIDER))+
+    CIRC("Nouvelle circulaire aux établissements",ligne("Calendrier de la rentrée 2026-2027","Envoyée à 42 écoles le 14 septembre"))+FORUM},
+  direction:{titre:"Espace Direction",sous:"EP Bon Berger, Kinshasa",corps:
+    section("Inscriptions à approuver",
+      ligne("Patrick Mukendi, enseignant","4e année A. Graduat",DECIDER)+
+      ligne("Grâce Ilunga, élève","2e année A. Née à Kinshasa le 3 mars 2018",DECIDER)+
+      ligne("Marie Kasongo, parent","Demande le lien avec Grâce Ilunga",DECIDER))+
+    section("Bibliothèque",ligne("Bulletin du 1er trimestre, Grâce Ilunga","Visible par l'élève et ses parents")+ligne("Manuel de calcul, 4e année","Visible par la 4e année A"),"Ajouter un document")+
+    CIRC("Nouvelle circulaire",ligne("Réunion des parents samedi à 9 h","Envoyée aux parents et enseignants"))+FORUM},
+  enseignant:{titre:"Bonjour, Patrick Mukendi",sous:"Enseignant, 4e année A, EP Bon Berger",corps:
+    section("Bibliothèque",ligne("Manuel de calcul, 4e année","Livre scolaire")+ligne("Lecture et expression, 4e année","Livre scolaire"))+
+    CIRC("",ligne("Réunion des parents samedi à 9 h","De la direction, hier"))+FORUM},
+  eleve:{titre:"Bonjour, Grâce Ilunga",sous:"Élève, 2e année A, EP Bon Berger",corps:
+    section("Bibliothèque",ligne("Mon bulletin du 1er trimestre","Bulletin")+ligne("Mon premier livre de lecture, 2e année","Livre scolaire"))+
+    CIRC("",ligne("Vacances de fin d'année : dates","De la direction, lundi"))+FORUM},
+  parent:{titre:"Bonjour, Marie Kasongo",sous:"Parent de Grâce Ilunga, 2e année A, EP Bon Berger",corps:
+    section("Bibliothèque",ligne("Bulletin du 1er trimestre, Grâce Ilunga","Bulletin de votre enfant")+ligne("Mon premier livre de lecture, 2e année","Livre scolaire de la classe de votre enfant"))+
+    CIRC("",ligne("Réunion des parents samedi à 9 h","De la direction, hier")+ligne("Vacances de fin d'année : dates","De la direction, lundi"))+FORUM}
+};
+
+function vueConnexion(){
+  return '<h1>Se connecter</h1><p class="sous">Logiciel de gestion des écoles</p>'+
+    champ("E-mail ou téléphone")+champ("Mot de passe","password")+
+    '<button class="btn" data-go="direction">Se connecter</button>'+
+    '<p class="sous" style="margin-top:18px">Pas encore de compte ? <button class="lien" data-go="inscription">Créer un compte</button></p>'+
+    '<div class="info">Votre compte doit être approuvé avant la première connexion.</div>';
+}
+function vueInscription(){
+  var tabs='<div class="onglets" role="tablist">'+ONGLETS.map(function(o){
+    return '<button role="tab" aria-selected="'+(o[0]===onglet)+'" data-tab="'+o[0]+'">'+o[1]+'</button>';}).join('')+'</div>';
+  var f=FORMS[onglet].map(function(x){return champ(x[0],x[1],x[2]);}).join('');
+  return '<h1>Créer un compte</h1><p class="sous">Choisissez votre profil.</p>'+tabs+f+
+    '<button class="btn" data-envoi="1">Envoyer la demande</button><div id="retour" role="status"></div>'+
+    '<p class="sous" style="margin-top:18px">Déjà inscrit ? <button class="lien" data-go="connexion">Se connecter</button></p>';
+}
+function vueTableau(k){
+  var t=TABLEAUX[k];
+  return '<div class="entete"><div><h1>'+t.titre+'</h1><p class="sous">'+t.sous+'</p></div>'+
+    '<button class="btn mini sec" data-go="connexion">Se déconnecter</button></div>'+t.corps;
+}
+function rendre(){
+  document.getElementById("nav").innerHTML=ECRANS.map(function(e){
+    return '<button data-go="'+e[0]+'" aria-current="'+(e[0]===ecran)+'">'+e[1]+'</button>';}).join('');
+  document.getElementById("app").innerHTML=ecran==="connexion"?vueConnexion():ecran==="inscription"?vueInscription():vueTableau(ecran);
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.go){ecran=b.dataset.go;rendre();window.scrollTo(0,0);}
+  else if(b.dataset.tab){onglet=b.dataset.tab;rendre();}
+  else if(b.dataset.envoi){document.getElementById("retour").innerHTML='<div class="info">'+MESSAGES[onglet]+'</div>';}
+  else if(b.dataset.d){
+    var z=b.parentNode, ok=b.dataset.d==="ok";
+    z.outerHTML='<div class="etat '+(ok?"ok":"non")+'">'+(ok?"Approuvé":"Refusé")+'</div>';
+  }
+});
+rendre();
+</script>
+</body>
+</html>

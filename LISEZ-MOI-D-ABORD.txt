@@ -1,0 +1,63 @@
+LOGICIEL DE GESTION DES ÉCOLES (RDC)
+Ce dossier contient TOUT le logiciel. Lisez ce fichier en premier.
+
+==================================================
+CE QUE CONTIENT LE DOSSIER
+==================================================
+- src/ et public/ ......... le logiciel lui-même (ne rien modifier)
+- package.json ............ liste des composants, lue automatiquement par l'hébergeur
+- schema.sql .............. la base de données (à copier dans Neon, étape 1)
+- creer_super_admin.sql ... crée VOTRE compte Super admin (à modifier, puis à copier dans Neon)
+- documentation/ .......... aperçu des écrans (fichier à ouvrir dans le navigateur)
+- README.md ............... notes techniques (facultatif)
+- migration_televersement.sql ... NE PAS UTILISER (seulement pour une ancienne base)
+
+==================================================
+METTRE LE LOGICIEL EN LIGNE GRATUITEMENT
+(un ordinateur est nécessaire pour l'étape 2)
+==================================================
+
+ÉTAPE 1 - LA BASE DE DONNÉES (site : neon.com)
+1. Créez un compte, puis un projet. Région : Europe (Francfort).
+2. Cliquez sur le bouton "Connect" et copiez l'adresse qui commence par
+   postgresql://  (gardez-la, on s'en sert à l'étape 3).
+3. Ouvrez "SQL Editor". Ouvrez le fichier schema.sql avec le Bloc-notes,
+   copiez tout son contenu, collez-le dans Neon, cliquez sur "Run".
+4. Ouvrez creer_super_admin.sql avec le Bloc-notes. Remplacez
+   votre.email@exemple.cd par votre e-mail, et CHANGEZ-MOI-2026 par un mot de
+   passe solide (gardez les guillemets). Copiez, collez dans Neon, cliquez "Run".
+   C'est avec cet e-mail et ce mot de passe que vous entrerez dans le logiciel.
+
+ÉTAPE 2 - GITHUB (site : github.com)
+1. Créez un compte, puis un nouveau dépôt (repository) en mode "Private".
+2. Cliquez sur "uploading an existing file".
+3. Décompressez d'abord ce zip. Glissez TOUT LE CONTENU du dossier décompressé
+   dans la page GitHub (les fichiers ET les dossiers), puis cliquez "Commit changes".
+
+ÉTAPE 3 - L'APPLICATION (site : render.com)
+1. Créez un compte, cliquez "New" puis "Web Service", et connectez GitHub.
+2. Choisissez votre dépôt, puis réglez :
+      Region ............ Frankfurt
+      Runtime ........... Node
+      Build Command ..... npm install
+      Start Command ..... npm start
+      Instance Type ..... Free
+3. Dans "Environment Variables", ajoutez deux variables :
+      DATABASE_URL = l'adresse Neon copiée à l'étape 1
+      NODE_ENV     = production
+4. Cliquez "Create Web Service" et attendez quelques minutes.
+
+ÉTAPE 4 - VÉRIFIER
+Render affiche une adresse en https://....onrender.com. Ouvrez-la et connectez-vous
+avec votre e-mail et mot de passe Super admin.
+Ensuite : inscrire une école (Créer un compte > École), l'approuver depuis
+l'espace Super admin, se connecter comme directeur, créer les classes, puis
+inscrire enseignants, élèves et parents.
+
+==================================================
+À SAVOIR PENDANT LES TESTS
+==================================================
+- Après une pause, la première ouverture est lente (environ 1 minute).
+- N'entrez pas de vraies données d'élèves pour l'instant.
+- Les PDF envoyés disparaissent quand l'application redémarre (offre gratuite).
+- Il n'y a pas encore de fonction "changer le mot de passe" : choisissez-en un solide.
